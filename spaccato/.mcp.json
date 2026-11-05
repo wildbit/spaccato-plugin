@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "spaccato": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/bin/spaccato.mjs",
+        "mcp"
+      ],
+      "env": {
+        "SPACCATO_PROJECT_DIR": "${CLAUDE_PROJECT_DIR}"
+      }
+    }
+  }
+}

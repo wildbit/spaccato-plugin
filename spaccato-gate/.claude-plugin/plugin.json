@@ -1,0 +1,8 @@
+{
+  "name": "spaccato-gate",
+  "description": "The Spaccato review gate: when the agent says it is done, a card is written for the work since the last card, and the stop is blocked with the brief when the agent is not done. A run per stop; install only when you want that.",
+  "version": "0.1.0",
+  "author": { "name": "Wildbit, LLC", "url": "https://spaccato.dev" },
+  "homepage": "https://spaccato.dev",
+  "keywords": ["review", "gate", "spaccato"]
+}
