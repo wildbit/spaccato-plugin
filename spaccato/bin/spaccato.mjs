@@ -37882,12 +37882,29 @@ var PATTERNS = [
   /\b[sr]k_(?:live|test)_[A-Za-z0-9]{16,}\b/g,
   /\bspc_[A-Za-z0-9_-]{43}\b/g,
   /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/g,
-  /\b(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{16,}/g
+  /\b(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{16,}/g,
+  // Vendor-prefixed tokens in the common shape: a short lowercase prefix, then random letters and digits (Sentry sntrys_,
+  // Hugging Face hf_, npm npm_, Shopify shpat_, GitLab glpat-, Linear lin_api_, Notion ntn_, Vercel vcp_, and the rest).
+  /\b[a-z][a-z0-9]{1,11}(?:_[a-z]{2,6})?[_-][A-Za-z0-9][A-Za-z0-9_-]{15,}\b/g,
+  // A long random-looking run of letters, digits and base64 characters: a raw token pasted on its own.
+  /(?<![A-Za-z0-9+/=_-])[A-Za-z0-9+/=_-]{32,}(?![A-Za-z0-9+/=_-])/g
 ];
+function randomLooking(candidate) {
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(candidate)) return false;
+  if (/^[0-9a-f]{32,}$/i.test(candidate)) return false;
+  const body = candidate.replace(/^[a-z][a-z0-9]{1,11}(?:_[a-z]{2,6})?[_-]/, "");
+  const digits = (body.match(/[0-9]/g) ?? []).length;
+  const letters = (body.match(/[A-Za-z]/g) ?? []).length;
+  if (digits < 3 || letters < 3) return false;
+  const underscored = /^[a-z][a-z0-9]{1,11}(?:_[a-z]{2,6})?_/.test(candidate);
+  if (underscored) return true;
+  return /[A-Z]/.test(body) && /[a-z]/.test(body);
+}
 var ASSIGNMENT = /\b([A-Za-z0-9_-]*?(?:api[_-]?key|apikey|secret|token|passw(?:or)?d|credential|auth(?:orization)?)[A-Za-z0-9_-]*)(\s*[:=]\s*)(["']?)([^\s"'`,;[\]]{8,})\3/gi;
 function redactSecrets(text2) {
   let out = text2.replace(ASSIGNMENT, (_m, name, sep, quote) => `${name}${sep}${quote}${REDACTED}${quote}`);
-  for (const re of PATTERNS) out = out.replace(re, REDACTED);
+  for (const re of PATTERNS.slice(0, -2)) out = out.replace(re, REDACTED);
+  for (const re of PATTERNS.slice(-2)) out = out.replace(re, (candidate) => randomLooking(candidate) ? REDACTED : candidate);
   return out;
 }
 
@@ -37977,6 +37994,7 @@ async function newestTranscript(dir) {
   }
   return best?.file ?? null;
 }
+var WANTED_TYPE = /"type"\s*:\s*"(?:user|assistant|queue-operation)"/;
 var INJECTED = /^(<(system-reminder|local-command|command-|bash-|task-notification|user-prompt-submit-hook|ide_|artifact-|hook)|\[Request interrupted)/;
 function isInjected(text2) {
   return INJECTED.test(text2);
@@ -38025,7 +38043,7 @@ async function readTranscript(file2, window = {}) {
   for await (const line of rl) {
     if (!line.startsWith("{")) continue;
     if (line.includes('"toolUseResult"')) continue;
-    if (!line.includes('"type":"user"') && !line.includes('"type":"assistant"') && !line.includes('"type":"queue-operation"')) continue;
+    if (!WANTED_TYPE.test(line)) continue;
     let e;
     try {
       e = JSON.parse(line);

@@ -1,7 +1,7 @@
 {
   "name": "spaccato",
   "description": "A one-minute card that explains what the coding agent changed, written by a second model for the person driving it, with a brief the agent acts on. The review gate is the separate spaccato-gate plugin.",
-  "version": "0.1.0",
+  "version": "0.1.26692106",
   "author": {
     "name": "Wildbit, LLC",
     "url": "https://spaccato.dev"
