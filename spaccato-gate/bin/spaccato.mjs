@@ -38264,7 +38264,7 @@ async function connectWait(serverUrl, code, timeoutMs) {
 
 // src/lib/local/mcp.ts
 var MCP_SERVER_VERSION = "0.1.0";
-var DEFAULT_CARD_WAIT_MS = 24e4;
+var DEFAULT_CARD_WAIT_MS = 36e4;
 var LOGIN_WAIT_MS = 12e4;
 var text = (t) => ({ content: [{ type: "text", text: t }] });
 var failure2 = (t) => ({ content: [{ type: "text", text: t }], isError: true });
@@ -38400,13 +38400,13 @@ async function startMcpServer() {
     "spaccato_card",
     {
       title: "Spaccato card",
-      description: "Explain the change in the repository as a Spaccato card for the person you work with, and get the brief you should act on. When this terminal is not connected yet, it opens the approval page in the person's browser and says so; call it again once they have approved. Reads what changed: on a branch, everything since it left the main line, commits and uncommitted work alike; on the main line, the uncommitted work (or since `base`); and this session's conversation. Sends to spaccato.dev, the person's own Spaccato account: the diff, the repository's text files the model may read, and the session's prompts and replies with obvious secrets (API keys, tokens, private keys) taken out; never tool output. A separate model writes the card there. Returns the verdict, the claims the code does not bear out, what needs a look, what was done without being asked, and the card's address. Takes a minute or three.",
+      description: "Explain the change in the repository as a Spaccato card for the person you work with, and get the brief you should act on. When this terminal is not connected yet, it opens the approval page in the person's browser and says so; call it again once they have approved. Reads what changed: on a branch, everything since it left the main line, commits and uncommitted work alike; on the main line, the uncommitted work (or since `base`); and this session's conversation. Sends to spaccato.dev, the person's own Spaccato account: the diff, the repository's text files the model may read, and the session's prompts and replies with obvious secrets (API keys, tokens, private keys) taken out; never tool output. A separate model writes the card there. Returns the verdict, the claims the code does not bear out, what needs a look, what was done without being asked, and the card's address. Takes three or four minutes.",
       inputSchema: {
         cwd: external_exports.string().describe("The repository's root (or any directory inside it).").optional(),
         base: external_exports.string().describe("The commit or ref the change is measured against; the last commit when omitted.").optional(),
         since: external_exports.string().describe("Read the conversation from this time instead of the base commit's time: an ISO time, or 45m, 3h, 2d.").optional(),
         share: external_exports.boolean().describe("Also mint a share link for the card.").optional(),
-        max_wait_seconds: external_exports.number().int().min(10).max(600).describe("How long to wait for the card before answering with its address only (default 240).").optional()
+        max_wait_seconds: external_exports.number().int().min(10).max(600).describe("How long to wait for the card before answering with its address only (default 360).").optional()
       }
     },
     async (args) => tools.card(args)

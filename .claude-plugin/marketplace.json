@@ -9,7 +9,7 @@
       "name": "spaccato",
       "source": "./spaccato",
       "description": "The /spaccato skill and the spaccato_card, spaccato_login and spaccato_status tools.",
-      "version": "0.1.26692106",
+      "version": "0.1.26864198",
       "author": {
         "name": "Wildbit, LLC"
       },
@@ -24,7 +24,7 @@
       "name": "spaccato-gate",
       "source": "./spaccato-gate",
       "description": "Opt-in: the Stop hook that writes a card when the agent says it is done and blocks the stop when it is not. A run per stop.",
-      "version": "0.1.26692106",
+      "version": "0.1.26864198",
       "author": {
         "name": "Wildbit, LLC"
       },
